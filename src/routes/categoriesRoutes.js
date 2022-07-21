@@ -1,5 +1,6 @@
 import { Router } from "express";
 //import functions
+import categoriesValidate from "../middlewares/categoriesValidateMiddleware.js";
 
 const router = Router();
 
