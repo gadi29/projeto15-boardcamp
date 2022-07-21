@@ -6,12 +6,12 @@ async function categoriesValidate (req, res, next) {
 
   const validateCategory = categoriesSchema.validate(newCategory);
   if(validateCategory.error) {
-    return res.send('Entrada inválida.').status(400);
+    return res.status(400).send('Entrada inválida.');
   }
 
-  const { rows: category } = await connection.query(`SELECT * FROM categories WHERE name = $1`, [newCategory.name]);
-  if (category) {
-    return res.send('Esta categoria já existe.').status(409);
+  const { rows: category } = await connection.query('SELECT * FROM categories WHERE name = $1', [newCategory.name]);
+  if (category.length > 0 ) {
+    return res.status(409).send('Esta categoria já existe.');
   }
 
   res.locals.category = newCategory;
