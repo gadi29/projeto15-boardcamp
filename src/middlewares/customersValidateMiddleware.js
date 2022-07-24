@@ -10,7 +10,7 @@ async function customersValidate (req, res, next) {
   }
 
   const { rows: customer } = await connection.query('SELECT * FROM customers WHERE cpf = $1', [newCustomer.cpf]);
-  if (game.length > 0 ) {
+  if (customer.length > 0 ) {
     return res.status(409).send('Este usuário já existe.');
   }
 
