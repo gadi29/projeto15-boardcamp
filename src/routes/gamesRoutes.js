@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 //imports
+import gamesValidate from "../middlewares/gamesValidateMiddleware.js";
 
 const router = Router();
 
