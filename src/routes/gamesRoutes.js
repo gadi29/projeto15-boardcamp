@@ -1,6 +1,5 @@
 import { Router } from "express";
 
-//imports
 import gamesValidate from "../middlewares/gamesValidateMiddleware.js";
 import { getGames, createGame } from "../controllers/gamesControllers.js";
 
