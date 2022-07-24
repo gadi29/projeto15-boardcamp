@@ -1,7 +1,7 @@
 import connection from '../dbStrategy/postgres.js';
 import gamesSchema from '../schemas/gamesSchema.js';
 
-async function categoriesValidate (req, res, next) {
+async function gamesValidate (req, res, next) {
   const newGame = req.body;
 
   const validateGame = gamesSchema.validate(newGame);
