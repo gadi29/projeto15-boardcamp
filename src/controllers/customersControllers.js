@@ -7,7 +7,7 @@ export async function getCustomers (req, res) {
     if(filterCustomers) {
       const { rows: customer } = await connection.query(
         `SELECT * FROM customers 
-        WHERE customers.cpf LIKE '${filterCustomers}%'`); //implement bindparam
+        WHERE cpf LIKE '${filterCustomers}%'`); //implement bindparam
   
       res.status(200).send(customer);
     } else {
@@ -22,8 +22,22 @@ export async function getCustomers (req, res) {
   }
 }
 
-export async function getOneCustomer (req, res) {
-  
+export async function getCustomerById (req, res) {
+  const { id } = req.params;
+
+  try {
+    const {rows: customer} = await connection.query(`
+    SELECT * FROM customers WHERE id = $1`, [id]);
+
+    if (customer.length === 0) {
+      res.status(404).send('Este cliente não existe.');
+    } else {
+      res.status(200).send(customer);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 }
 
 export async function createCustomer (req, res) {

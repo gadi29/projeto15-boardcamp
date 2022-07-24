@@ -9,9 +9,10 @@ async function customersValidate (req, res, next) {
     return res.status(400).send('Entrada inválida.');
   }
 
-  const { rows: customer } = await connection.query('SELECT * FROM customers WHERE cpf = $1', [newCustomer.cpf]);
+  const { rows: customer } = await connection.query(`
+  SELECT * FROM customers WHERE cpf = $1`, [newCustomer.cpf]);
   if (customer.length > 0 ) {
-    return res.status(409).send('Este usuário já existe.');
+    return res.status(409).send('Este cliente já existe.');
   }
 
   res.locals.customer = newCustomer;
