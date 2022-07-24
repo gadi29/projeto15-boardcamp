@@ -1,7 +1,25 @@
 import connection from "../dbStrategy/postgres.js";
 
 export async function getCustomers (req, res) {
+  const filterCustomers = req.query.cpf;
+
+  try {
+    if(filterCustomers) {
+      const { rows: customer } = await connection.query(
+        `SELECT * FROM customers 
+        WHERE customers.cpf LIKE '${filterCustomers}%'`); //implement bindparam
   
+      res.status(200).send(customer);
+    } else {
+      const { rows: listCustomers } = await connection.query(
+        `SELECT * FROM customers`);
+  
+      res.status(200).send(listCustomers);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 }
 
 export async function getOneCustomer (req, res) {

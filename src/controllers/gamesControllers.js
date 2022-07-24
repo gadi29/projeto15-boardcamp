@@ -1,15 +1,15 @@
 import connection from "../dbStrategy/postgres.js";
 
 export async function getGames (req, res) {
-  const filterGame = req.query.name;
+  const filterGames = req.query.name;
 
   try {
-    if(filterGame) {
+    if(filterGames) {
       const { rows: game } = await connection.query(
         `SELECT games.*, categories.name as "categoryName" 
         FROM games JOIN categories 
         ON games."categoryId"=categories.id 
-        WHERE games.name LIKE '${filterGame}%'`); //implement bindparam
+        WHERE games.name LIKE '${filterGames}%'`); //implement bindparam
   
       res.status(200).send(game);
     } else {
