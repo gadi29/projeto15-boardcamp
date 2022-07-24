@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 //imports
+import customersValidate from "../middlewares/customersValidateMiddleware";
 
 const router = Router();
 
