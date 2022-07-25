@@ -35,7 +35,7 @@ export async function updateCustomersValidate (req, res, next) {
   }
 
   res.locals.customer = customerUpdate;
-  res.locals.oldRegister = customer;
+  res.locals.oldRegister = customer[0];
 
   next();
 }
