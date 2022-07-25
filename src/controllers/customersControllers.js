@@ -57,5 +57,22 @@ export async function createCustomer (req, res) {
 }
 
 export async function editCustomer (req, res) {
-  
+  const customerUpdate = res.locals.customer;
+  const { id } = res.locals.oldRegister;
+
+  try {
+    await connection.query(`
+      UPDATE customers
+      SET name=$1
+      WHERE id=$2`,
+      [
+        customerUpdate.name,
+        id
+      ]);
+
+    res.sendStatus(202);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 }
