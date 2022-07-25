@@ -63,10 +63,12 @@ export async function editCustomer (req, res) {
   try {
     await connection.query(`
       UPDATE customers
-      SET name=$1
-      WHERE id=$2`,
+      SET name=$1, phone=$2, birthday=$3
+      WHERE id=$4`,
       [
         customerUpdate.name,
+        customerUpdate.phone,
+        customerUpdate.birthday,
         id
       ]);
 
