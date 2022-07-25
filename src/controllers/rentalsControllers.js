@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import connection from "../dbStrategy/postgres.js";
 
 export async function getRentals (req, res) {
@@ -20,11 +21,11 @@ export async function getRentals (req, res) {
         `SELECT * FROM rentals WHERE rentals."customerId"=$1`, [filterByCustomerId]
       );
 
-      const returnRentals = listRentals.map(rental => {
-        const customer = listCustomers.filter(customer => customer.id === rental.customerId);
-        const game = listGames.filter(game => game.id === rental.gameId);
+      const returnRentals = listRentals.map(rent => {
+        const customer = listCustomers.filter(customer => customer.id === rent.customerId);
+        const game = listGames.filter(game => game.id === rent.gameId);
 
-        return {...rental, customer: customer[0], game: game[0]};
+        return {...rent, customer: customer[0], game: game[0]};
       })
 
       res.status(200).send(returnRentals);
@@ -34,11 +35,11 @@ export async function getRentals (req, res) {
         `SELECT * FROM rentals WHERE rentals."gameId"=$1`, [filterByGameId]
       );
 
-      const returnRentals = listRentals.map(rental => {
-        const customer = listCustomers.filter(customer => customer.id === rental.customerId);
-        const game = listGames.filter(game => game.id === rental.gameId);
+      const returnRentals = listRentals.map(rent => {
+        const customer = listCustomers.filter(customer => customer.id === rent.customerId);
+        const game = listGames.filter(game => game.id === rent.gameId);
 
-        return {...rental, customer: customer[0], game: game[0]};
+        return {...rent, customer: customer[0], game: game[0]};
       })
 
       res.status(200).send(returnRentals);
@@ -48,11 +49,11 @@ export async function getRentals (req, res) {
         `SELECT * FROM rentals`
       );
 
-      const returnRentals = listRentals.map(rental => {
-        const customer = listCustomers.filter(customer => customer.id === rental.customerId);
-        const game = listGames.filter(game => game.id === rental.gameId);
+      const returnRentals = listRentals.map(rent => {
+        const customer = listCustomers.filter(customer => customer.id === rent.customerId);
+        const game = listGames.filter(game => game.id === rent.gameId);
 
-        return {...rental, customer: customer[0], game: game[0]};
+        return {...rent, customer: customer[0], game: game[0]};
       })
         
       res.status(200).send(returnRentals);
@@ -63,8 +64,8 @@ export async function getRentals (req, res) {
   }
 }
 
-export async function createRental (req, res) {
-  const newRental = res.locals.rental;
+export async function createRent (req, res) {
+  const newRent = res.locals.rent;
 
   try {
     await connection.query(
@@ -72,13 +73,13 @@ export async function createRental (req, res) {
       ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee") 
       VALUES ($1, $2, $3, $4, $5, $6, $7)`, 
       [
-        newRental.customerId,
-        newRental.gameId,
-        newRental.rentDate,
-        newRental.daysRented,
-        newRental.returnDate,
-        newRental.originalPrice,
-        newRental.delayFee
+        newRent.customerId,
+        newRent.gameId,
+        newRent.rentDate,
+        newRent.daysRented,
+        newRent.returnDate,
+        newRent.originalPrice,
+        newRent.delayFee
       ]);
 
     res.sendStatus(201);
@@ -88,10 +89,54 @@ export async function createRental (req, res) {
   }
 }
 
-export async function closeRental (req, res) {
-  const { id } = req.params;
+export async function closeRent (req, res) {
+  const rent = res.locals.rent;
+
+  try{
+    const { rows: game } = await connection.query(`
+    SELECT * FROM games WHERE id=$1`, [rent.gameId]);
+
+    const delayDays = Math.floor(((dayjs(dayjs() - (dayjs(rent.rentDate).add(rent.daysRented, 'day'))).valueOf())/3600000)/24);
+
+    if(delayDays <= 0) {
+      await connection.query(`
+      UPDATE rentals
+      SET "returnDate"=$1, "delayFee"=0
+      WHERE id=$2`, 
+      [
+        dayjs().format('YYYY-MM-DD'),
+        rent.id
+      ]);
+    } else {
+      await connection.query(`
+      UPDATE rentals
+      SET "returnDate"=$1, "delayFee"=$2
+      WHERE id=$3`, 
+      [
+        dayjs().format('YYYY-MM-DD'),
+        delayDays * game[0].pricePerDay,
+        rent.id
+      ]);
+    }
+    
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 }
 
-export async function deleteRental (req, res) {
-  const { id } = req.params;
+export async function deleteRent (req, res) {
+  const { id } = res.locals.rent;
+
+  try {
+    await connection.query(`
+    DELETE FROM rentals WHERE id = $1`, [id]
+    );
+
+    res.sendStatus(200);
+  } catch(error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 }
