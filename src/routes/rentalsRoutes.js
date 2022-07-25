@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-//import middleware
-//import controllers
+import rentalsValidate from "../middlewares/rentalsValidateMiddleware.js";
+import { getRentals, createRental, closeRental, deleteRental } from "../controllers/rentalsControllers.js";
 
 const router = Router();
 

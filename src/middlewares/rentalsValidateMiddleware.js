@@ -25,7 +25,13 @@ async function rentalsValidate (req, res, next) {
     return res.status(400).send('Não disponível no momento.')
   }
 
-  res.locals.rental = newRental;
+  res.locals.rental = {
+    ...newRental,
+    rentDate: new Date(),
+    returnDate: null,
+    originalPrice: (game[0].pricePerDay * newRental.daysRented),
+    delayFee: null
+  };
 
   next();
 }
