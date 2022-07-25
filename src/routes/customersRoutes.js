@@ -9,6 +9,6 @@ const router = Router();
 router.get('/customers', getCustomers);
 router.get('/customers/:id', getCustomerById);
 router.post('/customers', newCustomersValidate, createCustomer);
-router.put('/customers', updateCustomersValidate, editCustomer);
+router.put('/customers/:id', updateCustomersValidate, editCustomer);
 
 export default router;
