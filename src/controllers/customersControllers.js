@@ -32,7 +32,7 @@ export async function getCustomerById (req, res) {
     if (customer.length === 0) {
       res.status(404).send('Este cliente não existe.');
     } else {
-      res.status(200).send(customer);
+      res.status(200).send(customer[0]);
     }
   } catch (error) {
     console.error(error);
